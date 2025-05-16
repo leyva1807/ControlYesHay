@@ -1,0 +1,57 @@
+// Optimización para resolver el error "Target class [role] does not exist"
+
+// 1. Modificar el AppServiceProvider para asegurar que el modelo Role se registre correctamente
+// Por favor edita: c:\laragon\www\ControlYesHay\app\Providers\AppServiceProvider.php
+// Para asegurarte de que tenga este código:
+
+namespace App\Providers;
+
+use Illuminate\Support\ServiceProvider;
+use App\Models\Role;
+
+class AppServiceProvider extends ServiceProvider
+{
+    /**
+     * Register any application services.
+     */
+    public function register(): void
+    {
+        // Registrar el modelo Role en el contenedor de servicios explícitamente
+        $this->app->singleton('role', function ($app) {
+            return new Role();
+        });
+
+        // También registrar con la primera letra en mayúscula para mayor compatibilidad
+        $this->app->singleton('Role', function ($app) {
+            return new Role();
+        });
+    }
+
+    /**
+     * Bootstrap any application services.
+     */
+    public function boot(): void
+    {
+        //
+    }
+}
+
+// 2. Asegurate de que el archivo AuthenticatedLayout.tsx existe y está correctamente implementado
+// Verifica si existe: c:\laragon\www\ControlYesHay\resources\js\Layouts\AuthenticatedLayout.tsx
+// Si no existe, créalo con el código que te proporcioné anteriormente:
+
+// 3. Si ya existe, verifica que el namespace de 'role' se registre correctamente en bootstrap/app.php:
+/*
+$middleware->alias([
+    'role' => \App\Http\Middleware\RoleMiddleware::class,
+]);
+*/
+
+// 4. Limpia la caché después de estos cambios:
+// php artisan config:clear
+// php artisan cache:clear
+// php artisan route:clear
+// php artisan optimize:clear
+
+// 5. Si continúa el problema, revisa los middlewares que utilizas en las rutas:
+// Asegúrate de que al usar middleware 'role', siempre se llame con el alias correcto.
