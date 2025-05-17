@@ -3,29 +3,29 @@ import { NavMain } from '@/components/nav-main';
 import { NavUser } from '@/components/nav-user';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
 import { type NavItem } from '@/types';
-import { Link } from '@inertiajs/react';
+import { Link, router } from '@inertiajs/react';
 import { BookOpen, FileIcon, Folder, LayoutGrid, BanknoteIcon } from 'lucide-react';
 import AppLogo from './app-logo';
 
 const mainNavItems: NavItem[] = [
     {
         title: 'Dashboard',
-        href: '/dashboard',
+        href: route('dashboard'),
         icon: LayoutGrid,
     },
     {
         title: 'Titulares',
-        href: '/titulares',
+        href: route('titulares.index'),
         icon: FileIcon,
     },
     {
         title: 'Cuentas',
-        href: '/cuentas',
+        href: route('cuentas.index'),
         icon: BanknoteIcon,
     },
     {
         title: 'Operaciones',
-        href: '/operaciones',
+        href: route('operaciones.index'),
         icon: Folder,
     },
 ];

@@ -12,10 +12,29 @@ class CuentaController extends Controller
     /**
      * Mostrar listado de cuentas con sus titulares.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $cuentas = Cuenta::with('titular')->get();
-    return Inertia::render('Cuentas/Index', compact('cuentas'));
+        $query = Cuenta::with('titular')
+            ->when($request->search, function ($query, $search) {
+                return $query->where(function ($q) use ($search) {
+                    $q->where('numero_tarjeta', 'like', "%{$search}%")
+                        ->orWhere('numero_cuenta', 'like', "%{$search}%")
+                        ->orWhere('banco_asociado', 'like', "%{$search}%")
+                        ->orWhereHas('titular', function ($query) use ($search) {
+                            $query->where('nombre', 'like', "%{$search}%");
+                        });
+                });
+            })
+            ->orderBy('id', 'desc');
+
+        $cuentas = $query->paginate(10)->withQueryString();
+        $titulares = TitularTarjeta::orderBy('nombre')->get();
+
+        return Inertia::render('Cuentas/Index', [
+            'cuentas' => $cuentas,
+            'titulares' => $titulares,
+            'filters' => $request->only(['search']),
+        ]);
     }
 
     /**

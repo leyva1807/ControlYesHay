@@ -22,12 +22,13 @@ class OperacionController extends Controller
 
         return Inertia::render('Operaciones/Index', [
             'operaciones' => $operaciones,
-            'cuentas' => Cuenta::select('id', 'numero_cuenta', 'banco')->get(),
+            'cuentas' => Cuenta::select('id', 'numero_cuenta', 'banco_asociado', 'tipo_moneda', 'propietario_id')->get(),
             'titulares' => TitularTarjeta::select('id', 'nombre')->get(),
             'usuarios' => User::select('id', 'name')->get(), // Para asignar quien ejecuta
             'tipos_operacion' => ['transferencia', 'efectivo', 'saldo'],
             'tipos_moneda' => ['CUP', 'MLC', 'USD', 'Soles'],
             'estados_operacion' => ['pendiente', 'aprobada', 'pagada', 'en proceso', 'completada', 'cancelada'],
+            'filters' => $request->only(['search']), // Añadimos el campo filters esperado por el componente
         ]);
     }
 
@@ -50,7 +51,7 @@ class OperacionController extends Controller
             'telefono_cliente' => 'nullable|string|max:20',
             'usuario_ejecuta_id' => 'nullable|exists:users,id',
             'detalles' => 'nullable|string',
-            'imagen_pago' => 'nullable|string|max:255', // Asumiendo URL/path por ahora
+            'imagen_pago' => 'nullable|file|image|max:2048', // Permitir archivos de imagen
             'numero_voucher_remitente' => 'nullable|string|max:30',
             'numero_voucher_destinatario' => 'nullable|string|max:30',
             'orden' => 'nullable|string|max:255',
@@ -58,11 +59,28 @@ class OperacionController extends Controller
             'estado' => 'required|in:pendiente,aprobada,pagada,en proceso,completada,cancelada',
         ]);
 
-        $operacion = Operacion::create(array_merge($validated, [
+        // Extraer imagen_pago del array de datos validados antes de crear el registro
+        $imagenPago = $request->file('imagen_pago');
+        $datosOperacion = array_merge($validated, [
             'numero_operacion' => $this->generarNumeroOperacion(),
             'usuario_ordena_id' => Auth::id(),
             'fecha_operacion' => now(), // Aunque useCurrent está en la migración, es bueno ser explícito
-        ]));
+        ]);
+
+        // Eliminar el archivo de imagen de los datos validados para evitar errores de conversión
+        if (isset($datosOperacion['imagen_pago'])) {
+            unset($datosOperacion['imagen_pago']);
+        }
+
+        // Crear la operación primero
+        $operacion = Operacion::create($datosOperacion);
+
+        // Si hay un archivo de imagen, procesarlo y guardarlo
+        if ($imagenPago) {
+            $nombreArchivo = 'operacion_' . $operacion->id . '_' . time() . '.' . $imagenPago->getClientOriginalExtension();
+            $imagenPago->storeAs('public/operaciones', $nombreArchivo);
+            $operacion->update(['imagen_pago' => 'operaciones/' . $nombreArchivo]);
+        }
 
         return redirect()->route('operaciones.index')->with('success', 'Operación creada exitosamente.');
     }
@@ -80,7 +98,8 @@ class OperacionController extends Controller
             'telefono_cliente' => 'nullable|string|max:20',
             'usuario_ejecuta_id' => 'nullable|exists:users,id',
             'detalles' => 'nullable|string',
-            'imagen_pago' => 'nullable|string|max:255',
+            'imagen_pago' => 'nullable|file|image|max:2048', // Permitir archivos de imagen
+            'delete_imagen_pago' => 'nullable|boolean', // Nuevo campo para controlar la eliminación de imágenes
             'numero_voucher_remitente' => 'nullable|string|max:30',
             'numero_voucher_destinatario' => 'nullable|string|max:30',
             'orden' => 'nullable|string|max:255',
@@ -88,7 +107,38 @@ class OperacionController extends Controller
             'estado' => 'sometimes|required|in:pendiente,aprobada,pagada,en proceso,completada,cancelada',
         ]);
 
-        $operacion->update($validated);
+        // Extraer imagen_pago y delete_imagen_pago del array de datos validados
+        $imagenPago = $request->file('imagen_pago');
+        $borrarImagen = $request->boolean('delete_imagen_pago');
+        $datosOperacion = $validated;
+
+        // Eliminar los campos especiales del array para evitar errores
+        if (isset($datosOperacion['imagen_pago'])) {
+            unset($datosOperacion['imagen_pago']);
+        }
+        if (isset($datosOperacion['delete_imagen_pago'])) {
+            unset($datosOperacion['delete_imagen_pago']);
+        }
+
+        // Actualizar los datos básicos
+        $operacion->update($datosOperacion);
+
+        // Manejar la imagen según corresponda
+        if ($imagenPago) {
+            // Si hay una imagen actual, eliminarla primero
+            if ($operacion->imagen_pago) {
+                \Storage::delete('public/' . $operacion->imagen_pago);
+            }
+
+            // Guardar la nueva imagen
+            $nombreArchivo = 'operacion_' . $operacion->id . '_' . time() . '.' . $imagenPago->getClientOriginalExtension();
+            $imagenPago->storeAs('public/operaciones', $nombreArchivo);
+            $operacion->update(['imagen_pago' => 'operaciones/' . $nombreArchivo]);
+        } elseif ($borrarImagen && $operacion->imagen_pago) {
+            // Si no hay nueva imagen pero se indicó eliminar la existente
+            \Storage::delete('public/' . $operacion->imagen_pago);
+            $operacion->update(['imagen_pago' => null]);
+        }
 
         return redirect()->route('operaciones.index')->with('success', 'Operación actualizada exitosamente.');
     }

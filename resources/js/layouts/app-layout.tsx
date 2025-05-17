@@ -1,21 +1,19 @@
 import AppLayoutTemplate from '@/layouts/app/app-sidebar-layout';
 import { type BreadcrumbItem } from '@/types';
-import { type ReactNode, useEffect } from 'react'; // ReactNode y useEffect importados
+import { type ReactNode, useEffect } from 'react';
 import { usePage } from '@inertiajs/react';
 
-// Importa Toaster y la función toast de react-hot-toast
+// Importamos Toaster y la función toast de react-hot-toast
 import { Toaster, toast } from 'react-hot-toast';
-
-// Tu componente ToastNotification actual.
-// Considera si quieres mantenerlo o que react-hot-toast maneje todas las notificaciones.
-// Por ahora, lo dejaremos, pero he comentado su uso más abajo.
-// import ToastNotification from '@/components/ui/ToastNotification';
+import { CheckCircle, AlertTriangle, XCircle, Info } from 'lucide-react';
 
 interface AppLayoutProps {
     children: ReactNode;
     breadcrumbs?: BreadcrumbItem[];
+    user?: Record<string, unknown>;
+    header?: ReactNode;
     // Permite que otras props se pasen a AppLayoutTemplate
-    [key: string]: any;
+    [key: string]: unknown;
 }
 
 // Define una interfaz más específica para las props de la página, incluyendo flash.
@@ -23,10 +21,15 @@ interface CustomPageProps {
     flash?: {
         success?: string;
         error?: string;
-        // puedes añadir otros tipos de mensajes flash como 'info', 'warning'
+        warning?: string;
+        info?: string;
     };
+    auth?: {
+        user: Record<string, unknown>;
+    };
+    errors?: Record<string, string>;
     // aquí irían otras props globales que esperas de usePage().props
-    [key: string]: any; // para otras props no definidas explícitamente
+    [key: string]: unknown; // para otras props no definidas explícitamente
 }
 
 export default function AppLayout({ children, breadcrumbs, ...props }: AppLayoutProps) {
@@ -34,58 +37,96 @@ export default function AppLayout({ children, breadcrumbs, ...props }: AppLayout
     const page = usePage<CustomPageProps>();
     const flash = page.props.flash;
 
-    // useEffect para mostrar notificaciones flash usando react-hot-toast
+    // useEffect para mostrar notificaciones flash usando react-hot-toast con iconos mejorados
     useEffect(() => {
         if (flash?.success) {
-            toast.success(flash.success);
-            // Inertia usualmente limpia los mensajes flash después de leerlos una vez.
-            // Si necesitas limpiarlos manualmente (raro con Inertia), tendrías que hacerlo aquí.
+            toast.success(flash.success, {
+                icon: <CheckCircle className="h-5 w-5 text-green-600" />,
+                style: {
+                    borderRadius: '10px',
+                    background: '#f0fdf4',
+                    color: '#166534',
+                    boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
+                    border: '1px solid #dcfce7',
+                    padding: '16px',
+                },
+                duration: 5000,
+            });
         }
+
         if (flash?.error) {
-            toast.error(flash.error);
+            toast.error(flash.error, {
+                icon: <XCircle className="h-5 w-5 text-red-600" />,
+                style: {
+                    borderRadius: '10px',
+                    background: '#fef2f2',
+                    color: '#b91c1c',
+                    boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
+                    border: '1px solid #fee2e2',
+                    padding: '16px',
+                },
+                duration: 5000,
+            });
         }
-        // Podrías añadir más 'if' para otros tipos de mensajes flash (info, warning)
-    }, [flash]); // Este efecto se ejecutará cada vez que cambie el objeto 'flash'
+
+        if (flash?.warning) {
+            toast(flash.warning, {
+                icon: <AlertTriangle className="h-5 w-5 text-amber-600" />,
+                style: {
+                    borderRadius: '10px',
+                    background: '#fffbeb',
+                    color: '#b45309',
+                    boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
+                    border: '1px solid #fef3c7',
+                    padding: '16px',
+                },
+                duration: 5000,
+            });
+        }
+
+        if (flash?.info) {
+            toast(flash.info, {
+                icon: <Info className="h-5 w-5 text-blue-600" />,
+                style: {
+                    borderRadius: '10px',
+                    background: '#eff6ff',
+                    color: '#1e40af',
+                    boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
+                    border: '1px solid #dbeafe',
+                    padding: '16px',
+                },
+                duration: 5000,
+            });
+        }
+    }, [flash]);
 
     return (
         <>
-            {/* Componente Toaster de react-hot-toast */}
-            {/* Aquí puedes configurar la posición, duración por defecto, estilos, etc. */}
+            {/* Componente Toaster mejorado de react-hot-toast */}
             <Toaster
-                position="top-right" // Posiciones comunes: top-left, top-center, top-right, bottom-left, etc.
-                reverseOrder={false}  // Las nuevas toasts aparecen abajo si es true
-                gutter={8}            // Espacio entre toasts
-                containerClassName="" // Clase para el contenedor
-                containerStyle={{}}   // Estilos para el contenedor
+                position="top-right"
+                reverseOrder={false}
+                gutter={12}
+                containerStyle={{
+                    top: 80, // Ajustado para que no quede detrás de posibles barras de navegación
+                }}
                 toastOptions={{
-                    // Define opciones por defecto para todos los toasts
                     className: '',
-                    duration: 5000, // Duración por defecto en ms
-                    style: {
-                        background: '#ffffff', // Fondo blanco por defecto
-                        color: '#333333',    // Texto oscuro por defecto
-                        border: '1px solid #e0e0e0',
-                        boxShadow: '0 2px 10px rgba(0,0,0,0.1)',
-                    },
-
-                    // Opciones por defecto para tipos específicos de toasts
+                    duration: 5000,
                     success: {
-                        duration: 3000,
-                        iconTheme: {
-                            primary: '#10B981', // Verde Tailwind (emerald-500)
-                            secondary: '#FFFFFF',
-                        },
+                        duration: 5000,
                         style: {
-                            borderColor: '#10B981',
-                        }
+                            background: '#f0fdf4',
+                            color: '#166534',
+                            border: '1px solid #dcfce7',
+                        },
                     },
                     error: {
-                        iconTheme: {
-                            primary: '#EF4444', // Rojo Tailwind (red-500)
-                            secondary: '#FFFFFF',
-                        },
+                        duration: 7000, // Errores visibles por más tiempo
                         style: {
-                            borderColor: '#EF4444',
+                            background: '#fef2f2',
+                            color: '#b91c1c',
+                            border: '1px solid #fee2e2',
                         }
                     },
                 }}
@@ -94,16 +135,6 @@ export default function AppLayout({ children, breadcrumbs, ...props }: AppLayout
             <AppLayoutTemplate breadcrumbs={breadcrumbs} {...props}>
                 {children}
             </AppLayoutTemplate>
-
-            {/*
-                Tu componente ToastNotification original:
-                Si ahora usas react-hot-toast para manejar los mensajes flash (a través del useEffect de arriba),
-                probablemente ya no necesites este componente <ToastNotification /> o deberías adaptarlo.
-                Mostrar ambos podría resultar en notificaciones duplicadas para flash.success.
-                Por ello, lo he comentado. Si decides no usar el useEffect para los mensajes flash,
-                puedes descomentar tu componente.
-            */}
-            {/* <ToastNotification message={flash?.success} /> */}
         </>
     );
 }

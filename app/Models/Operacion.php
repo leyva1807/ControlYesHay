@@ -62,4 +62,18 @@ class Operacion extends Model
     {
         return $this->belongsTo(User::class, 'usuario_ejecuta_id');
     }
+
+    /**
+     * Accesorio para obtener la URL completa de la imagen de pago
+     */
+    protected $appends = ['imagen_pago_url'];
+
+    public function getImagenPagoUrlAttribute()
+    {
+        if (!$this->imagen_pago) {
+            return null;
+        }
+
+        return asset('storage/' . $this->imagen_pago);
+    }
 }

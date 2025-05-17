@@ -1,0 +1,155 @@
+{
+    // --- CONFIGURACIÓN GLOBAL RECOMENDADA PARA VS CODE EN ESPAÑOL ---
+    // Copia este archivo a tu carpeta de usuario de VS Code:
+    // Windows: %APPDATA%\Code\User\settings.json
+
+    // Interfaz en español
+    "locale": "es",
+    "workbench.colorTheme": "Default Dark+",
+    "workbench.iconTheme": "material-icon-theme", // Requiere instalar material-icon-theme
+
+    // --- VISUALIZACIÓN MEJORADA ---
+    // Fuente con ligaduras para mejor visualización del código
+    "editor.fontFamily": "JetBrains Mono, Fira Code, Consolas, 'Courier New', monospace",
+    "editor.fontLigatures": true,
+    "editor.fontSize": 15,
+    "editor.lineHeight": 24,
+
+    // Mejor visualización del código
+    "editor.wordWrap": "on", // Evita scroll horizontal
+    "editor.stickyScroll.enabled": true, // Mantiene visible el contexto actual (nombre de la función/clase)
+    "editor.guides.bracketPairs": true, // Muestra guías entre paréntesis/llaves
+    "editor.bracketPairColorization.enabled": true, // Colorea paréntesis/llaves
+    "editor.minimap.enabled": true, // Mapa de navegación a la derecha
+    "editor.rulers": [80, 120], // Líneas verticales de guía
+    "editor.renderWhitespace": "boundary", // Muestra espacios en blanco
+
+    // --- AUTOGUARDADO Y FORMATEO ---
+    "files.autoSave": "afterDelay", // Guarda automáticamente
+    "files.autoSaveDelay": 1000, // 1 segundo
+    "editor.formatOnSave": true, // Formatea al guardar
+    "editor.formatOnPaste": true, // Formatea al pegar
+    "editor.defaultFormatter": "esbenp.prettier-vscode", // Requiere instalar prettier
+
+    // --- CORRECCIÓN ORTOGRÁFICA Y DOCUMENTACIÓN ---
+    // Soporte para español e inglés
+    "cSpell.language": "en,es",
+    "cSpell.enabled": true,
+    // Palabras específicas de Laravel/PHP/React en español
+    "cSpell.words": [
+        "Laravel", "laragon", "artisan", "Eloquent", "Inertia",
+        "middleware", "Tailwind", "Vite", "Ziggy", "componente",
+        "controlador", "migración", "enrutamiento", "autenticación",
+        "titulares", "tarjetas", "telefono", "nombre", "operaciones",
+        "cuentas", "varchar", "nullable", "seeder", "administrador",
+        "contraseña", "correo", "usuario", "ventana", "botón",
+        "navegación", "pantalla", "desplegable", "formulario", "tabla"
+    ],
+
+    // --- INDENTACIÓN ---
+    "editor.tabSize": 4,
+    "editor.insertSpaces": true,
+    "editor.detectIndentation": false,
+
+    // --- TERMINAL INTEGRADA ---
+    "terminal.integrated.defaultProfile.windows": "Git Bash",
+    "terminal.integrated.fontSize": 14,
+
+    // --- CONFIGURACIÓN POR LENGUAJE ---
+    "[php]": {
+        "editor.defaultFormatter": "bmewburn.vscode-intelephense-client",
+        "editor.formatOnSave": true
+    },
+    "[blade]": {
+        "editor.defaultFormatter": "onecentlin.laravel-blade",
+        "editor.formatOnSave": true
+    },
+    "[javascript]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode",
+        "editor.formatOnSave": true
+    },
+    "[typescript]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode",
+        "editor.formatOnSave": true
+    },
+    "[json]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+
+    // --- CONFIGURACIONES ESPECÍFICAS PARA LARAVEL ---
+    "laravel-pint.enable": true,
+    "intelephense.environment.phpVersion": "8.2",
+
+    // --- TAILWIND CSS ---
+    "tailwindCSS.emmetCompletions": true,
+    "tailwindCSS.includeLanguages": {
+        "blade": "html",
+        "javascript": "javascript",
+        "typescript": "typescript",
+        "javascriptreact": "html",
+        "typescriptreact": "html"
+    },
+
+    // --- GITLENSES Y GIT ---
+    "git.enableSmartCommit": true,
+    "git.confirmSync": false,
+    "gitlens.codeLens.enabled": false, // Desactiva información adicional de git en el código
+    "gitlens.currentLine.enabled": false, // Desactiva información de git en la línea actual
+
+    // --- EXCLUSIONES PARA MEJORAR RENDIMIENTO ---
+    "files.exclude": {
+        "**/.git": true,
+        "**/.DS_Store": true,
+        "**/Thumbs.db": true,
+        "**/node_modules": true,
+        "**/vendor": false // Falso para ver el código de vendor cuando sea necesario
+    },
+    "search.exclude": {
+        "**/node_modules": true,
+        "**/bower_components": true,
+        "**/vendor": true,
+        "**/public/build": true,
+        "**/storage/logs": true,
+        "**/storage/framework": true,
+        "**/storage/app": true
+    },
+
+    // --- OPTIMIZACIÓN DE RENDIMIENTO ---
+    "extensions.autoUpdate": false, // Controla manualmente las actualizaciones
+    "npm.fetchOnlinePackageInfo": false, // Desactiva la búsqueda automática de información de paquetes
+    "files.watcherExclude": {
+        "**/.git/objects/**": true,
+        "**/.git/subtree-cache/**": true,
+        "**/node_modules/**": true,
+        "**/vendor/**": true,
+        "**/storage/**": true,
+        "**/.phpunit.cache/**": true
+    },
+
+    // --- COPILOT (INTELIGENCIA ARTIFICIAL) ---
+    // Configuración optimizada para aprendizaje
+    "github.copilot.enable": {
+        "*": true,                // Activado en todos los lenguajes por defecto
+        "plaintext": true,        // Activado en texto para documentación
+        "markdown": true,         // Activado en archivos de documentación
+        "yaml": true,             // Activado para archivos de configuración
+        "php": true,              // Activado para PHP (Laravel)
+        "typescript": true,       // Activado para TypeScript/React
+        "javascript": true        // Activado para JavaScript/React
+    },
+
+    // Habilitamos todas las funciones de Copilot para mejor aprendizaje
+    "github.copilot.inlineSuggest.enable": true,        // Sugerencias en línea
+    "github.copilot.chat.enabled": true,                // Panel de chat
+    "editor.inlineSuggest.enabled": true,               // Activar sugerencias inline
+    "github.copilot.editor.enableAutoCompletions": true, // Autocompletado
+
+    // Configuración para principiantes
+    "github.copilot.advanced": {
+        "showEditorCompletions": true,   // Mostrar completados en el editor
+        "indentationSize": 4             // Tamaño de indentación consistente
+    },
+
+    // Copilot completará automáticamente tus comentarios en español
+    "editor.languageDetection": true
+}

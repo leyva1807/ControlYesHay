@@ -102,18 +102,17 @@ export interface Operacion {
     fecha_operacion: string; // De Operacion.php 'fecha_operacion'
     cuenta_id: number; // De Operacion.php
     propietario_id?: number; // FK a TitularTarjeta, de Operacion.php 'propietario_id'
-    tipo_operacion: 'Ingreso' | 'Egreso' | string; // De Operacion.php 'tipo_operacion'. El formulario usa 'Ingreso'/'Egreso'.
+    tipo_operacion: 'Ingreso' | 'Egreso' | 'transferencia' | 'efectivo' | 'saldo' | string; // De Operacion.php 'tipo_operacion'
     monto: number; // De Operacion.php
     detalles?: string | null; // Cambiado de descripcion a detalles
     estado: string; // De Operacion.php 'estado'. El formulario usa 'Pendiente' | 'Pagado' | 'Vencido'.
+    tipo_moneda?: 'CUP' | 'MLC' | 'USD' | 'Soles' | string; // Añadido porque se usa en el formulario
     // notas?: string | null; // Se elimina si se combina con detalles en el frontend antes de enviar
     imagen_pago_url?: string | null; // Derivado de 'imagen_pago' (nombre de archivo) en Operacion.php
     cuenta?: Cuenta; // Para datos anidados como op.cuenta.nombre_cuenta
     // titular_tarjeta se accede vía operacion.cuenta.titular_tarjeta
     // Campos adicionales del modelo Operacion.php que podrían ser útiles:
     // numero_operacion?: string;
-    // tipo_moneda?: string;
-    // detalles?: string; // Si 'descripcion' y 'notas' no lo cubren.
     created_at?: string;
     updated_at?: string;
 }

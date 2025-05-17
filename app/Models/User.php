@@ -43,29 +43,36 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }    /**
-     * Array de roles del usuario (simplificado para evitar problemas de resolución)
-     * Posibles valores: 'admin', 'operador', 'contadora'
+     * Los atributos que deben convertirse a tipos nativos.
      *
-     * @var array<string>
+     * @var array<string, string>
      */
-    protected $userRoles = ['admin']; // Por defecto asignamos admin para pruebas
+    protected $casts = [
+        'email_verified_at' => 'datetime',
+        'password' => 'hashed',
+        'roles' => 'array',
+    ];
 
     /**
      * Verifica si el usuario tiene un rol específico.
-     * Implementación simplificada sin depender de modelos externos.
+     * Implementación basada en la columna roles de la tabla users.
      *
      * @param string $role
      * @return bool
      */
     public function hasRole(string $role): bool
     {
-        // Implementación simple basada en array de roles
-        return in_array($role, $this->userRoles);
+        // Si no hay roles definidos en la BD, usar valor por defecto para desarrollo
+        if (!$this->roles) {
+            return in_array($role, ['admin']); // Por defecto es admin solo para desarrollo
+        }
+
+        return in_array($role, $this->roles);
     }
 
     /**
      * Verifica si el usuario tiene alguno de los roles dados.
-     * Implementación simplificada sin depender de modelos externos.
+     * Implementación basada en la columna roles de la tabla users.
      *
      * @param array $roles
      * @return bool
@@ -88,7 +95,7 @@ class User extends Authenticatable
      */
     public function setRoles(array $roles): self
     {
-        $this->userRoles = $roles;
+        $this->roles = $roles;
         return $this;
     }
 }

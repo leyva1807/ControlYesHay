@@ -25,12 +25,10 @@ class UserSeeder extends Seeder
             ]
         );
 
-        // Asegurarse de que el rol 'admin' existe
-        $adminRole = Role::firstOrCreate(['nombre' => 'admin']);
-
-        // Asignar el rol 'admin' al usuario administrador
+        // Asignar el rol 'admin' al usuario administrador en el nuevo sistema de roles
         if (!$admin->hasRole('admin')) {
-            $admin->roles()->attach($adminRole->id);
+            $admin->roles = ['admin'];
+            $admin->save();
         }
 
         // También podemos crear otros usuarios si es necesario
